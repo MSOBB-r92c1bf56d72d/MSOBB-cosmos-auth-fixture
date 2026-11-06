@@ -1,0 +1,14 @@
+name: MSOBB APIView reachability
+on:
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read only APIView status
+        shell: bash
+        run: |
+          for url in https://apiview.dev/ https://apiview.dev/review/; do
+            status=$(curl --silent --show-error --max-time 12 --max-redirs 0 --output /dev/null --write-out '%{http_code}' "$url" || true)
+            printf 'MSOBB status url=%s code=%s\n' "$url" "$status"
+          done
