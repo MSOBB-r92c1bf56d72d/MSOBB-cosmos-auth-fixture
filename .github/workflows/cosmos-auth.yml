@@ -1,0 +1,23 @@
+name: MSOBB owned Cosmos auth fixture
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  auth-boundary:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start preinstalled classic emulator
+        shell: powershell
+        run: |
+          Import-Module "$env:ProgramFiles\Azure Cosmos DB Emulator\PSModules\Microsoft.Azure.CosmosDB.Emulator"
+          Start-CosmosDbEmulator
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install published Python SDK
+        run: python -m pip install azure-cosmos==4.17.1
+      - name: Owner and victim scoped-token controls
+        run: python cosmos_auth_probe.py
